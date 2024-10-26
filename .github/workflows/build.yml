@@ -37,8 +37,9 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: build
+          name: build-${{ github.sha }}
           retention-days: 1
+          overwrite: true
           path: |
             .
             !./node_modules
