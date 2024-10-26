@@ -60,16 +60,17 @@ jobs:
 
       - name: copy files
         env:
-          deploy-path: ${{ env.deploy-path }}
+          DEPLOY_PATH: ${{ env.deploy-path }}
         run: |
-          New-Item -ItemType Directory -Force -Path $env:deploy-path
-          Copy-Item -Path .\* -Destination $env:deploy-path -Recurse
+          New-Item -ItemType Directory -Force -Path $env:DEPLOY_PATH
+          Copy-Item -Path .\* -Destination $env:DEPLOY_PATH -Recurse
 
       - name: Install dependencies
         working-directory: ${{ env.deploy-path }}
         run: |
           npm install
+
       - name: Start server
         working-directory: ${{ env.deploy-path }}
         run: |
-          ${{ env.pm2cmd }} starOrRestart ecosystem.config.js
+          ${{ env.pm2cmd }} startOrRestart ecosystem.config.js
