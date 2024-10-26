@@ -14,7 +14,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
 
@@ -44,6 +44,9 @@ jobs:
             !./node_modules
             !./src
   deploy:
+    env:
+      deploy-path: C:\test\www
+      pm2cmd: C:\ProgramData\npm\npm\pm2.cmd
     runs-on: self-hosted
     needs: build
     steps:
@@ -56,6 +59,17 @@ jobs:
           name: build
 
       - name: copy files
+        env:
+          deploy-path: ${{ env.deploy-path }}
         run: |
-          New-Item -ItemType Directory -Force -Path C:\test\www
-          Copy-Item -Path .\ -Destination C:\test\www -Recurse
+          New-Item -ItemType Directory -Force -Path $env:deploy-path
+          Copy-Item -Path .\* -Destination $env:deploy-path -Recurse
+
+      - name: Install dependencies
+        working-directory: ${{ env.deploy-path }}
+        run: |
+          npm install
+      - name: Start server
+        working-directory: ${{ env.deploy-path }}
+        run: |
+          ${{ env.pm2cmd }} starOrRestart ecosystem.config.js
