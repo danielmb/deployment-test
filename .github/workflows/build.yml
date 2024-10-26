@@ -42,7 +42,7 @@ jobs:
           overwrite: true
           path: |
             .
-            ./.next
+            .next
 
   # deploy:
   #   env:
