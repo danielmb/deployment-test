@@ -75,7 +75,7 @@ jobs:
       #   run: |
       #     npm install
 
-      # - name: Start server
-      #   working-directory: ${{ env.deploy-path }}
-      #   run: |
-      #     ${{ env.pm2cmd }} startOrRestart ecosystem.config.js
+      - name: Start server
+        working-directory: ${{ env.deploy-path }}
+        run: |
+          ${{ env.pm2cmd }} startOrRestart ecosystem.config.js
