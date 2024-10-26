@@ -22,8 +22,7 @@ jobs:
         shell: pwsh
         id: hash
         run: |
-          echo "::set-output name=hash::${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-${{ hashFiles('**.ts', '**.tsx') }}"
-
+          echo "hash=${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-${{ hashFiles('**.ts', '**.tsx') }}" >> $GITHUB_OUTPUT
       - name: Dir
         run: |
           dir
@@ -32,7 +31,7 @@ jobs:
         with:
           path: |
             .next/cache
-
+          enableCrossOsArchive: true
           key: ${{ runner.os }}-nextjs-${{ steps.hash.outputs.hash }}
           restore-keys: |
             ${{ runner.os }}-nextjs-
@@ -72,7 +71,7 @@ jobs:
           path: |
             .next/cache
           key: ${{ runner.os }}-nextjs-${{ needs.build.outputs.hash }}
-
+          enableCrossOsArchive: true
           # - name: Download artifact
       #   uses: actions/download-artifact@v4
       #   with:
