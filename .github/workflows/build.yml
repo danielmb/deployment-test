@@ -22,7 +22,7 @@ jobs:
         shell: pwsh
         id: hash
         run: |
-          echo "hash=${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-${{ hashFiles('**.ts', '**.tsx') }}" >> $GITHUB_OUTPUT
+          echo "::set-output name=hash::${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-${{ hashFiles('**.ts', '**.tsx') }}"
       - name: Dir
         run: |
           dir
