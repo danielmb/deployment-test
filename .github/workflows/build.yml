@@ -43,34 +43,34 @@ jobs:
             .
             !./node_modules
             !./src
-  deploy:
-    env:
-      deploy-path: C:\test\www\${{ github.run_id}}-${{ github.run_number }}-${{ github.run_attempt }}
-      pm2cmd: C:\ProgramData\npm\npm\pm2.cmd
-    runs-on: self-hosted
-    needs: build
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  # deploy:
+  #   env:
+  #     deploy-path: C:\test\www\${{ github.run_id}}-${{ github.run_number }}-${{ github.run_attempt }}
+  #     pm2cmd: C:\ProgramData\npm\npm\pm2.cmd
+  #   runs-on: self-hosted
+  #   needs: build
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
 
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: build
+  #     - name: Download artifact
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: build
 
-      - name: copy files
-        env:
-          DEPLOY_PATH: ${{ env.deploy-path }}
-        run: |
-          New-Item -ItemType Directory -Force -Path $env:DEPLOY_PATH
-          Copy-Item -Path .\* -Destination $env:DEPLOY_PATH -Recurse
+  #     - name: copy files
+  #       env:
+  #         DEPLOY_PATH: ${{ env.deploy-path }}
+  #       run: |
+  #         New-Item -ItemType Directory -Force -Path $env:DEPLOY_PATH
+  #         Copy-Item -Path .\* -Destination $env:DEPLOY_PATH -Recurse
 
-      - name: Install dependencies
-        working-directory: ${{ env.deploy-path }}
-        run: |
-          npm install
+  #     - name: Install dependencies
+  #       working-directory: ${{ env.deploy-path }}
+  #       run: |
+  #         npm install
 
-      - name: Start server
-        working-directory: ${{ env.deploy-path }}
-        run: |
-          ${{ env.pm2cmd }} startOrRestart ecosystem.config.js
+  #     - name: Start server
+  #       working-directory: ${{ env.deploy-path }}
+  #       run: |
+  #         ${{ env.pm2cmd }} startOrRestart ecosystem.config.js
