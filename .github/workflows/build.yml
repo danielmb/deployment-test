@@ -42,8 +42,8 @@ jobs:
           overwrite: true
           path: |
             .
-            !./node_modules
-            !./src
+            ./.next
+
   # deploy:
   #   env:
   #     deploy-path: C:\test\www\${{ github.run_id}}-${{ github.run_number }}-${{ github.run_attempt }}
