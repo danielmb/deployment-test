@@ -7,9 +7,11 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
-    outputs:
-      hash: ${{ steps.hash.outputs.hash }}
+    runs-on: self-hosted
+    env:
+      deploy-path: C:\test\www\${{ github.run_id}}-${{ github.run_number }}-${{ github.run_attempt }}
+      pm2cmd: C:\ProgramData\npm\npm\pm2.cmd
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -18,21 +20,27 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+      # - name: HashFiles
+      #   shell: pwsh
+      #   id: hash
+      #   run: |
+      #     echo "::set-output name=hash::${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-${{ hashFiles('**.ts', '**.tsx') }}"
       - name: HashFiles
-        shell: pwsh
-        id: hash
+        id: hashts
         run: |
-          echo "::set-output name=hash::${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-${{ hashFiles('**.ts', '**.tsx') }}"
-      - name: Dir
+          echo "::set-output name=hashts::${{ hashFiles('**.ts', '**.tsx') }}"
+
+      - name: HashPackage
+        id: hashpackage
         run: |
-          dir
+          echo "::set-output name=hashpackage::${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}"
       - name: Restore cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: |
             .next/cache
           enableCrossOsArchive: true
-          key: ${{ runner.os }}-nextjs-${{ steps.hash.outputs.hash }}
+          key: ${{ runner.os }}-nextjs-${{ steps.hashpackage.outputs.hashpackage }}-${{ steps.hashts.outputs.hashts }}
           restore-keys: |
             ${{ runner.os }}-nextjs-
 
@@ -42,35 +50,12 @@ jobs:
       - name: Build
         run: npm run build
 
-      # - name: Upload artifact
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: build-${{ github.sha }}
-      #     retention-days: 1
-      #     overwrite: true
-      #     path: |
-      #       .
-      #       .next
-
-  deploy:
-    env:
-      deploy-path: C:\test\www\${{ github.run_id}}-${{ github.run_number }}-${{ github.run_attempt }}
-      pm2cmd: C:\ProgramData\npm\npm\pm2.cmd
-    runs-on: self-hosted
-    needs: [build]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Dir
-        run: |
-          dir
-      - name: Get from cache
-        uses: actions/cache/restore@v4
+      - name: Save cache
+        uses: actions/cache/save@v4
         with:
           path: |
             .next/cache
-          key: ${{ runner.os }}-nextjs-${{ needs.build.outputs.hash }}
+          key: ${{ runner.os }}-nextjs-${{ steps.hashpackage.outputs.hashpackage }}-${{ steps.hashts.outputs.hashts }}
           enableCrossOsArchive: true
           # - name: Download artifact
       #   uses: actions/download-artifact@v4
