@@ -45,7 +45,7 @@ jobs:
             !./src
   deploy:
     env:
-      deploy-path: C:\test\www
+      deploy-path: C:\test\www\${{ github.run_id}}-${{ github.run_number }}-${{ github.run_attempt }}
       pm2cmd: C:\ProgramData\npm\npm\pm2.cmd
     runs-on: self-hosted
     needs: build
