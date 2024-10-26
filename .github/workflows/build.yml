@@ -55,7 +55,7 @@ jobs:
         with:
           name: build
 
-      - name: Deploy
+      - name: copy files
         run: |
-          echo "Deploying..."
-          echo "Artifact is available at ${{ inputs.artifact }}"
+          New-Item -ItemType Directory -Force -Path C:\test\www
+          Copy-Item -Path .\ -Destination C:\test\www -Recurse
