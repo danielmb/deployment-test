@@ -8,7 +8,8 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-
+    outputs:
+      hash: ${{ steps.hash.outputs.hash }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -17,6 +18,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+      - name: HashFiles
+        shell: pwsh
+        id: hash
+        run: |
+          echo "::set-output name=hash::${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-${{ hashFiles('**.ts', '**.tsx') }}"
 
       - name: Dir
         run: |
@@ -27,9 +33,9 @@ jobs:
           path: |
             .next/cache
 
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-${{ hashFiles('**.ts', '**.tsx') }}
+          key: ${{ runner.os }}-nextjs-${{ steps.hash.outputs.hash }}
           restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-
+            ${{ runner.os }}-nextjs-
 
       - name: Install dependencies
         run: npm install
@@ -52,7 +58,7 @@ jobs:
       deploy-path: C:\test\www\${{ github.run_id}}-${{ github.run_number }}-${{ github.run_attempt }}
       pm2cmd: C:\ProgramData\npm\npm\pm2.cmd
     runs-on: self-hosted
-    needs: build
+    needs: [build]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -65,7 +71,7 @@ jobs:
         with:
           path: |
             .next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-${{ hashFiles('**.ts', '**.tsx') }}
+          key: ${{ runner.os }}-nextjs-${{ needs.build.outputs.hash }}
 
           # - name: Download artifact
       #   uses: actions/download-artifact@v4
