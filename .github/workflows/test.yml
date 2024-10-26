@@ -1,0 +1,27 @@
+name: Test-hashFiles
+on:
+  workflow_dispatch:
+
+jobs:
+  hashGithubServer:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: HashFiles
+        run: |
+          echo ${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}
+          echo ${{ hashFiles('**.ts', '**.tsx') }}
+
+  hashSelfHosted:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: HashFiles
+        run: |
+          echo ${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}
+          echo ${{ hashFiles('**.ts', '**.tsx') }}
