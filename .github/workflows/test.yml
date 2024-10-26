@@ -12,7 +12,7 @@ jobs:
 
       - name: HashFiles
         run: |
-          echo ${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}
+          echo ${{ hashFiles('package-lock.json') }}
           echo ${{ hashFiles('**.ts', '**.tsx') }}
 
   hashSelfHosted:
@@ -23,5 +23,5 @@ jobs:
 
       - name: HashFiles
         run: |
-          echo ${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}
+          echo ${{ hashFiles('package-lock.json') }}
           echo ${{ hashFiles('**.ts', '**.tsx') }}
